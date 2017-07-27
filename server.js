@@ -11,6 +11,8 @@ const app = express();
 
 // log the http layer
 app.use(morgan('common'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // we're going to add some items to ShoppingList
 // so there's some data to look at
@@ -27,6 +29,37 @@ app.get('/shopping-list', (req, res) => {
   res.json(ShoppingList.get());
 });
 
+app.post('/shopping-list',(req, res) => {
+  // ensure `name` and `budget` are in request body
+  const requiredFields = ['name', 'budget'];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  const item = ShoppingList.create(req.body.name, req.body.budget);
+  res.status(201).json(item);
+});
+
+app.post('/recipe',function(req,res){
+	console.log(req.body);
+	if(!req.body.name){
+		console.log("No namme in req.body");
+		res.json({"error" : "No recipe name"})
+    		res.end();
+	}else if(!req.body.ingredients){
+		console.log("No ingredients in req.body");
+		res.json({"error" : "No ingredients"})
+    		res.end();
+	}else{
+  		var input = Recipes.create(req.body.name, req.body.ingredients);
+    		res.status(201).json(input);
+  }
+})
 app.get('/recipes',function(req,res){
 	res.json(Recipes.get());
 })
