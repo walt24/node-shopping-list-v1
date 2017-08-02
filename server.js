@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const morgan = require('morgan');
@@ -45,24 +46,41 @@ app.post('/shopping-list',(req, res) => {
   res.status(201).json(item);
 });
 
-app.post('/recipe',function(req,res){
-	console.log(req.body);
-	if(!req.body.name){
-		console.log("No namme in req.body");
-		res.json({"error" : "No recipe name"})
-    		res.end();
-	}else if(!req.body.ingredients){
-		console.log("No ingredients in req.body");
-		res.json({"error" : "No ingredients"})
-    		res.end();
-	}else{
-  		var input = Recipes.create(req.body.name, req.body.ingredients);
-    		res.status(201).json(input);
-  }
+app.delete('/shopping-list/:id',(req,res)=>{
+  ShoppingList.delete(req.params.id);
+  res.json({alert:`Shopping list ${req.params.id} deleted.`});
+  res.status(204);
+  
 })
-app.get('/recipes',function(req,res){
+
+
+app.get('/recipe',function(req,res){
 	res.json(Recipes.get());
 })
+
+app.post('/recipe',function(req,res){
+  console.log(req);
+  if(!req.body.name){
+    console.log("No namme in req.body");
+    res.json({"error" : "No recipe name"})
+    res.end();
+  }else if(!req.body.ingredients){
+    console.log("No ingredients in req.body");
+    res.json({"error" : "No ingredients"})
+    res.end();
+  }else{
+    var input = Recipes.create(req.body.name, req.body.ingredients);
+    res.status(201).json(input);
+  }
+})
+
+app.delete('/recipe/:id',(req,res)=>{
+  Recipes.delete(req.params.id);
+  res.json({alert:`Shopping list ${req.params.id} deleted.`});
+  res.status(204);
+  
+})
+
 
 app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${process.env.PORT || 8080}`);
