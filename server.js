@@ -49,9 +49,36 @@ app.post('/shopping-list',(req, res) => {
 app.delete('/shopping-list/:id',(req,res)=>{
   ShoppingList.delete(req.params.id);
   res.json({alert:`Shopping list ${req.params.id} deleted.`});
-  res.status(204);
+  res.status(204).end();
   
 })
+
+app.put('/shopping-list/:id', jsonParser, (req, res) => {
+  const requiredFields = ['name', 'budget', 'id'];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  if (req.params.id !== req.body.id) {
+    console.log('here');
+    const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
+    console.error(message);
+    return res.status(400).send(message);
+  }
+  console.log(`Updating shopping list item \`${req.params.id}\``);
+  ShoppingList.update({
+    id: req.params.id,
+    name: req.body.name,
+    budget: req.body.budget
+  });
+  res.status(204).end();
+});
+
 
 
 app.get('/recipe',function(req,res){
@@ -77,9 +104,36 @@ app.post('/recipe',function(req,res){
 app.delete('/recipe/:id',(req,res)=>{
   Recipes.delete(req.params.id);
   res.json({alert:`Shopping list ${req.params.id} deleted.`});
-  res.status(204);
+  res.status(204).end();
   
 })
+
+app.put('/recipe/:id', jsonParser, (req, res) => {
+  const requiredFields = ['name', 'budget', 'id'];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  if (req.params.id !== req.body.id) {
+    console.log('here');
+    const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
+    console.error(message);
+    return res.status(400).send(message);
+  }
+  console.log(`Updating shopping list item \`${req.params.id}\``);
+  ShoppingList.update({
+    id: req.params.id,
+    name: req.body.name,
+    ingredients: req.body.ingredients
+  });
+  res.status(204).end();
+});
+
 
 
 app.listen(process.env.PORT || 8080, () => {
